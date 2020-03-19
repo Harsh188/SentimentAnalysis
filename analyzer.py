@@ -51,7 +51,7 @@ reviews_train_clean = preprocess_reviews(reviews_train)
 reviews_test_clean = preprocess_reviews(reviews_test)
 
 #testing purposes
-print(reviews_train_clean)
+# print(reviews_train_clean)
 # print(reviews_test_clean)
 
 # STEP 4. neutralize the data by feeding it through a count vectorizer function
@@ -70,33 +70,55 @@ X_train, X_val, y_train, y_val = train_test_split(
     X, target, train_size = 0.75
 )
 
+# STEP 6. Traning the model using Logistic regression
+# Fist we will figure out which C value results in the most amount of accuracy
+# This will get rid of all the outliers.
 for c in [0.01, 0.05, 0.25, 0.5, 1]:
-    
     lr = LogisticRegression(C=c)
     lr.fit(X_train, y_train)
-    print ("Accuracy for C=%s: %s" 
-           % (c, accuracy_score(y_val, lr.predict(X_val))))
+    # print ("Accuracy for C=%s: %s" % (c, accuracy_score(y_val, lr.predict(X_val))))
 
-
+# Using the most accurate C value we will train the final model
 final_model = LogisticRegression(C=0.05)
 final_model.fit(X, target)
 print ("Final Accuracy: %s" 
        % accuracy_score(target, final_model.predict(X_test)))
 
-
+# STEP 7. Now we will store the data in a dictionary with the word being the key 
+# and the value being it's accuracy coefficient.
 feature_to_coef = {
     word: coef for word, coef in zip(
         cv.get_feature_names(), final_model.coef_[0]
     )
 }
+
+# For testing purposes
 for best_positive in sorted(
     feature_to_coef.items(), 
     key=lambda x: x[1], 
-    reverse=True)[:20]:
+    reverse=True)[:5]:
     print (best_positive)
     
 for best_negative in sorted(
     feature_to_coef.items(), 
     key=lambda x: x[1])[:5]:
     print (best_negative)
-    
+
+# print (feature_to_coef.items())
+
+# STEP 9. Accepting user input and determining a tone scale
+while(True):
+	print("\n\n\n")
+	s = input("Enter paragraph to check tone: Enter 'quit' to quit:\n")
+	if s =='quit':
+		break
+	words = s.lower().split()
+	polarity = 0
+	ctr=0
+	for w in words:
+		if len(w)>3:
+			if w in feature_to_coef:
+				polarity+=feature_to_coef[w]
+				ctr+=1
+	polarity=(polarity/ctr)*100
+	print("\n\nThe tone of your speech is: ",polarity)
