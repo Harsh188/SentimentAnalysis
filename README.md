@@ -2,7 +2,7 @@
 
 This is a small NLP project which uses sentiment analysis and machine learning to classify words with positive or negative connotations. 
 
-This project is a part of the final project for the Recommender system using Machine Learning PES IO course.
+This project is a part of the final project for the Getting started with NLP PES IO course.
 
 Started: Mar 2020
 Finished: Mar 2020
